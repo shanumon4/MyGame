@@ -2,17 +2,16 @@
 	Schema = mongoose.Schema;
 
 var UserCardSchema = new Schema({
-    UserId: String,
-    ContestId: String,
-    OpenDate: Date,
-    userTaken: Boolean,
-    userHidChar: String,
-    CreatedBy: Number,
-    CreatedOn: Date,
-    ModifiedBy: Number,
-    ModifiedOn: Date,
-    IsDeleted: Boolean
-});
+    
+    Id: Number,
+    UserId: Number,
+    CardId: Number,
+    CO: { type: Date, default: Date.now },
+    CB: Number,
+    MO: Date,
+    MB: Number,
+    ContestId: Number
+}, { collection: 'UserCards' });
 
 
 mongoose.model('UserCard', UserCardSchema);

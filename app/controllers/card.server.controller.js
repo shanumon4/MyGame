@@ -2,20 +2,20 @@
 var UserCard = require('mongoose').model('UserCard');
 var CardSchema = Card.schema;
 
-CardSchema.pre('save', function (next) {
-    var self = this;
+//CardSchema.pre('save', function (next) {
+//    var self = this;
     
-    Card.findOne({ ContestId : this.ContestId }, 'ContestId', function (err, results) {
-        if (err) {
-            next(err);
-        } else if (results) {
+//    Card.findOne({ ContestId : this.ContestId }, 'ContestId', function (err, results) {
+//        if (err) {
+//            next(err);
+//        } else if (results) {
             
-            next(new Error("email must be unique"));
-        } else {
-            next();
-        }
-    });
-});
+//            next(new Error("email must be unique"));
+//        } else {
+//            next();
+//        }
+//    });
+//});
 
 exports.create = function (req, res, next) {
 	var card = new Card(req.body);
@@ -31,13 +31,35 @@ exports.create = function (req, res, next) {
 }
 
 exports.list = function (req, res, next) {
-	console.log(Card);
-	Card.find({}, function (err, cards) {
-		if (err)
-			return next(err);
-		else
-			res.json(cards);
-	});
+    //console.log(Card);
+
+    var call = function (daa) {
+        //res.json(daa);
+        UserCard.find({ 'ContestId': req.query.ContestId, 'UserId': req.query.UserId }, function (err, usercards) {
+            if (err)
+                return next(err);
+            else
+                calb(usercards,daa);
+        });
+    };
+    
+    var calb = function (usercard, card) {
+        for (var i = 0; i < card.length; i++) {
+            var foundCards = usercard.find(function (j) { return j.CardId == card[i].Id });
+            //if (foundCards) { 
+            card[i].Taken = foundCards ? true:false;
+            //}
+            
+        }
+
+        res.json(card);
+    };
+    Card.find({ 'ContestId': req.query.ContestId }, 'OwnerId Id HiddenChar Taken CreatedOn', function (err, cards) {
+        if (err)
+            return next(err);
+        else
+            call(cards);
+    });
 }
 
 exports.read = function (req, res) {
@@ -89,6 +111,52 @@ exports.update = function (req, res, next) {
     });
 }
 
+exports.unlockCard = function (req, res, next) {
+    var cardId = req.body.CardId,
+        userId = req.body.UserId,
+        contestId = req.body.ContestId;
+        
+    UserCard.find({ 'UserId': userId, 'ContestId':contestId }, function (err, data) {
+        if (err)
+            return next(err);
+        else {
+
+            console.log(data.length);
+            if (!data.length) {
+                Card.findOneAndUpdate({ 'Id': cardId }, { 'Taken': true, 'OwnerId': userId }, function (error, da) {
+                    if (error)
+                        return next(error);
+                    else { 
+                        console.log('da: '+da);
+                        var newUserCard = new UserCard(req.body);
+                        newUserCard.save(function (e, r) {
+                            if (e)
+                                return next(e);
+                            else {
+                                console.log('r: ' + r);
+                                res.json(r);
+                            }
+                        });
+                    }
+                });
+
+                
+            }
+            else { 
+                var newUserCard = new UserCard(req.body);
+                newUserCard.save(function (e, r) {
+                    if (e)
+                        return next(e);
+                    else {
+                        console.log('r: ' + r);
+                        res.json(r);
+                    }
+                });
+            }
+        }
+    });
+
+}
 //exports.delete = function (req, res, next) {
 //	req.user.remove(function (err, user) {
 //		if (err)

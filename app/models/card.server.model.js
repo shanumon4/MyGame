@@ -2,17 +2,18 @@
 	Schema = mongoose.Schema;
 
 var CardSchema = new Schema({
-	OwnerId: Number,
-	HiddenChar: String,
-	ImageUrl: String,
-	Taken: Boolean,
-	ContestDate: Date,
-	ContestId: Number,
-	CreatedBy: Number,
-	CreatedOn: Date,
-	ModifiedBy: Number,
-	ModifiedOn: Date,
-	IsDeleted:Boolean
-});
+    Id: Number,
+    OwnerId: Number,
+    HiddenChar: String,
+    ImageUrl: String,
+    Taken: Boolean,
+    ContestDate: Date,
+    CreatedOn: Date,
+    CreatedBy: Number,
+    ModifiedOn: Date,
+    ModifiedBy: Number,
+    IsDeleted: Boolean,
+    ContestId: Number
+}, { collection: 'Card'});
 
 mongoose.model('Card', CardSchema);
