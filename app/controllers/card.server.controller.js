@@ -54,7 +54,7 @@ exports.list = function (req, res, next) {
 
         res.json(card);
     };
-    Card.find({ 'ContestId': req.query.ContestId }, 'OwnerId Id HiddenChar Taken CreatedOn', function (err, cards) {
+    Card.find({ 'ContestId': req.query.ContestId }, function (err, cards) {
         if (err)
             return next(err);
         else
